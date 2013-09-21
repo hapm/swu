@@ -1,0 +1,5 @@
+name: ${project.name}
+version: ${project.version}
+description: The ${project.name} plugin allows you to track chunk generation and versioning.
+main: ${main.class}
+database: true
