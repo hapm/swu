@@ -49,6 +49,7 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin {
 			public void run() {
 				ChunkInfo info = getChunkInfo(chunk, newChunk);
 				getDatabase().save(info);
+				getLogger().info("New " + info.toString());
 			}
 		});
 	}
@@ -97,12 +98,11 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin {
 	public List<Class<?>> getDatabaseClasses() {
 		List<Class<?>> classes = super.getDatabaseClasses();
 		classes.add(ChunkInfo.class);
+		classes.add(BlockTypeId.class);
 		return classes;
 	}
 
 	private int getActiveVersion() {
 		return 1;
 	}
-	
-	
 }

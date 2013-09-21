@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 @Entity @IdClass(ChunkInfoId.class)
@@ -17,8 +18,12 @@ public class ChunkInfo {
 	private int x;
 	private long firstSeen;
 
-	@ManyToMany	Set<BlockTypeId> breakedBlocks;
-	@ManyToMany Set<BlockTypeId> placedBlocks;
+	@ManyToMany
+	@JoinTable(name="chunk_info_breaked_blocks")
+	Set<BlockTypeId> breakedBlocks;
+	@ManyToMany
+	@JoinTable(name="chunk_info_placed_blocks")
+	Set<BlockTypeId> placedBlocks;
 	
 	public static final int UNKOWN_GENERATOR_VERSION = -1;
 	
@@ -81,5 +86,11 @@ public class ChunkInfo {
 	@Override
 	public int hashCode() {
 		return (world + "|" + key).hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		String.format("ChunkInfo (%d) world:%s, x:%d, z:%d, v:%d", key, world, x, z, generatorVersion);
+		return super.toString();
 	}
 }
