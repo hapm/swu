@@ -1,6 +1,7 @@
 package de.hapm.swu;
 
 import java.util.Calendar;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -9,6 +10,7 @@ import javax.persistence.PersistenceException;
 import org.bukkit.Chunk;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
@@ -19,11 +21,13 @@ import org.bukkit.plugin.java.JavaPlugin;
  * 
  * @author Markus Andree
  */
-public class SmoothWorldUpdaterPlugin extends JavaPlugin {
+public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
+	
 	@Override
 	public void onEnable() {
-		setupDatabase();
 		super.onEnable();
+		setupDatabase();
+		getServer().getPluginManager().registerEvents(this, this);
 	}
 
 	public void setupDatabase() {
@@ -86,9 +90,12 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin {
 	}
 	
 	public ChunkInfo getChunkInfo(final Chunk chunk, final boolean isNew) {
-		ChunkInfo info = getDatabase().find(ChunkInfo.class, new ChunkInfoId(chunk));
+		Hashtable<String, Object> id = new Hashtable<String, Object>();
+		id.put("world", chunk.getWorld().getName());
+		id.put("key", ChunkInfo.getKey(chunk.getX(), chunk.getZ()));
+		ChunkInfo info = getDatabase().find(ChunkInfo.class, id);
 		if (info == null) {
-			info = new ChunkInfo(chunk.getX(), chunk.getZ(), isNew ? getActiveVersion() : ChunkInfo.UNKOWN_GENERATOR_VERSION, Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
+			info = new ChunkInfo(chunk.getWorld().getName(), chunk.getX(), chunk.getZ(), isNew ? getActiveVersion() : ChunkInfo.UNKOWN_GENERATOR_VERSION, Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
 		}
 		
 		return info;
