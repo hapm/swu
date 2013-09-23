@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.persistence.PersistenceException;
 
+import org.bukkit.Chunk;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -174,7 +175,7 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	
 	@EventHandler
 	public void chunkLoad(final ChunkLoadEvent args) {
-		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getChunk()),args.isNewChunk()) {
+		updateTask.add(new ChunkInfoUpdate(getIdForChunk(args.getChunk()),args.isNewChunk()) {
 			@Override
 			public UpdateResult update(ChunkInfo chunk) {
 				return UpdateResult.EntityOnly;
@@ -185,7 +186,7 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	@EventHandler(priority=EventPriority.MONITOR)
 	public void blockPlaced(final BlockPlaceEvent args) {
 		final int typeId = args.getBlockPlaced().getTypeId();
-		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getBlock().getChunk())) {
+		updateTask.add(new ChunkInfoUpdate(getIdForChunk(args.getBlock().getChunk())) {
 			@Override
 			public UpdateResult update(ChunkInfo chunk) {
 				return chunk.getPlacedBlocks().add(lookupType(typeId)) ? UpdateResult.RelationsOnly : UpdateResult.None;
@@ -197,12 +198,16 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	public void blockBreak(final BlockBreakEvent args) {
 		final int typeId = args.getBlock().getTypeId();
 		
-		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getBlock().getChunk())) {
+		updateTask.add(new ChunkInfoUpdate(getIdForChunk(args.getBlock().getChunk())) {
 			@Override
 			public UpdateResult update(ChunkInfo chunk) {
 				return chunk.getBreakedBlocks().add(lookupType(typeId)) ? UpdateResult.RelationsOnly : UpdateResult.None;
 			}
 		});
+	}
+	
+	public ChunkInfoId getIdForChunk(Chunk chunk) {
+		return new ChunkInfoId(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 	}
 
 	private BlockTypeId lookupType(int typeId) {

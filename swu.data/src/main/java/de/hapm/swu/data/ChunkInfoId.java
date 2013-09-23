@@ -2,8 +2,6 @@ package de.hapm.swu.data;
 
 import java.io.Serializable;
 
-import org.bukkit.Chunk;
-
 
 public class ChunkInfoId implements Serializable {
 	/**
@@ -29,10 +27,6 @@ public class ChunkInfoId implements Serializable {
 		this.world = world;
 		this.x = x;
 		this.z = z;
-	}
-
-	public ChunkInfoId(final Chunk chunk) {
-		this(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 	}
 	
 	@Override
