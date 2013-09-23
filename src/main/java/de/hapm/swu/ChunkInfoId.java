@@ -11,19 +11,23 @@ public class ChunkInfoId implements Serializable {
 	private static final long serialVersionUID = -3487813011891898938L;
 	
 	public String world;
-	public long key;
+	public int x;
+	public int z;
 	
 	public ChunkInfoId() {
 		
 	}
 	
-	public ChunkInfoId(final String world, final long key) {
-		this.key = key;
-		this.world = world;
+	public ChunkInfoId(ChunkInfo info) {
+		this.world = info.getWorld();
+		this.x = info.getX();
+		this.z = info.getZ();
 	}
 	
 	public ChunkInfoId(final String world, final int x, final int z) {
-		this(world, ChunkInfo.getKey(x, z));
+		this.world = world;
+		this.x = x;
+		this.z = z;
 	}
 
 	public ChunkInfoId(final Chunk chunk) {
@@ -37,11 +41,22 @@ public class ChunkInfoId implements Serializable {
 		
 		ChunkInfoId id = (ChunkInfoId)obj;
 		
-		return id.world == null || (id.world.equals(world) && id.key == key);
+		return ((id.world == null && world == null) || id.world.equals(world)) && id.x == x && id.z == z;
 	}
 	
 	@Override
 	public int hashCode() {
-		return ((world == null ? "" : world) + "|" + key).hashCode();
+		return ((world == null ? "" : world) + "|" + getXZ()).hashCode();
+	}
+
+	private long getXZ() {
+		return getXZ(x, z);
+	}
+
+	public static long getXZ(int x, int z) {
+		long key = x;
+		key = key << 32;
+		key = key | (long)z;
+		return key;
 	}
 }
