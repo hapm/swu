@@ -1,5 +1,8 @@
 package de.hapm.swu;
 
+import de.hapm.swu.data.ChunkInfo;
+import de.hapm.swu.data.ChunkInfoId;
+
 public abstract class ChunkInfoUpdate {
 	private ChunkInfoId id;
 	private boolean firstLoad;

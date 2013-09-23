@@ -19,6 +19,10 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import de.hapm.swu.data.BlockTypeId;
+import de.hapm.swu.data.ChunkInfo;
+import de.hapm.swu.data.ChunkInfoId;
+
 /**
  * This little plugin tracks when chunks where generated, and with what version of 
  * 

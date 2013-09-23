@@ -109,7 +109,7 @@
                                 <echo message="Ebean enhancing classes debug level -----------------------------------" />
                                 <echo message="Classpath: ${compile_classpath}" />
                                 <taskdef name="ebeanEnhance" classname="com.avaje.ebean.enhance.ant.AntEnhanceTask" classpath="${compile_classpath}" />
-                                <ebeanEnhance classSource="${project.build.outputDirectory}" packages="de.hapm.swu.**" transformArgs="debug=1" />
+                                <ebeanEnhance classSource="${project.build.outputDirectory}" packages="de.hapm.swu.data.**" transformArgs="debug=1" />
                             </tasks>
                             <encoding>UTF-8</encoding>
                         </configuration>

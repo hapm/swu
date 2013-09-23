@@ -1,8 +1,9 @@
-package de.hapm.swu;
+package de.hapm.swu.data;
 
 import java.io.Serializable;
 
 import org.bukkit.Chunk;
+
 
 public class ChunkInfoId implements Serializable {
 	/**

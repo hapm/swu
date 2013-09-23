@@ -1,4 +1,4 @@
-package de.hapm.swu;
+package de.hapm.swu.data;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;

@@ -1,4 +1,4 @@
-package de.hapm.swu;
+package de.hapm.swu.data;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +11,7 @@ import javax.persistence.IdClass;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.UniqueConstraint;
+
 
 @Entity @IdClass(ChunkInfoId.class) @UniqueConstraint(columnNames={"world","x","z"})
 public class ChunkInfo {
