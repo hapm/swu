@@ -39,6 +39,11 @@ public class ChunkInfo {
 	
 	public static final int UNKOWN_GENERATOR_VERSION = -1;
 	
+	public ChunkInfo() {
+		this.breakedBlocks = new HashSet<BlockTypeId>();
+		this.placedBlocks = new HashSet<BlockTypeId>();
+	}
+	
 	public ChunkInfo(String world, int x, int z, int generatorVersion, long firstSeen) {
 		this.breakedBlocks = new HashSet<BlockTypeId>();
 		this.placedBlocks = new HashSet<BlockTypeId>();
@@ -73,12 +78,12 @@ public class ChunkInfo {
 		return world;
 	}
 	
-	public boolean setPlaced(BlockTypeId typeId) {
-		return placedBlocks.add(typeId);
+	public Set<BlockTypeId> getPlacedBlocks() {
+		return placedBlocks;
 	}
-
-	public boolean setBreaked(BlockTypeId typeId) {
-		return breakedBlocks.add(typeId);	
+	
+	public Set<BlockTypeId> getBreakedBlocks() {
+		return breakedBlocks;
 	}
 	
 	@Override

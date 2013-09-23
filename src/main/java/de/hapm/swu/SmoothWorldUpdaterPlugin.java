@@ -39,15 +39,29 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			synchronized (chunkInfoCache) {
 				if (databaseUpdates.size() == 0)
 					return;
-				
+				long start = System.currentTimeMillis();
+				long requests = 0;
+				long exceptions = 0;
 				ChunkInfoUpdate update;
 				while ((update = databaseUpdates.poll()) != null) {
+					requests++;
 					ChunkInfo info = getChunkInfo(update.getId(), update.isFirstLoad());
 					try {
-						if (update.update(info))
+						switch (update.update(info)) {
+						case EntityOnly:
+							if (!getDatabase().getBeanState(info).isNewOrDirty())
+								break;
+							
+						case RelationsOnly:
+						case SaveAll:
 							cacheForWrite(info);
+							break;
+						case None:
+							break;
+						}
 					}
 					catch (Exception ex) {
+						exceptions++;
 						getLogger().severe(ex.toString());
 					}
 				}
@@ -55,7 +69,8 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 				if (chunkInfoCache.size() > 0) {
 					try {
 						getDatabase().save(Collections.list(chunkInfoCache.elements()));
-						getLogger().info(String.format("Saved %d chunks", chunkInfoCache.size()));
+						long needed = System.currentTimeMillis() - start;
+						getLogger().info(String.format("Saved %d chunks in %dms from %d update requests with %d exceptions", chunkInfoCache.size(), needed, requests, exceptions));
 					}
 					catch (Exception ex) {
 						getLogger().severe(ex.toString());
@@ -157,8 +172,8 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	public void chunkLoad(final ChunkLoadEvent args) {
 		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getChunk()),args.isNewChunk()) {
 			@Override
-			public boolean update(ChunkInfo chunk) {
-				return true;
+			public UpdateResult update(ChunkInfo chunk) {
+				return UpdateResult.EntityOnly;
 			}
 		});
 	}
@@ -168,8 +183,8 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		final int typeId = args.getBlockPlaced().getTypeId();
 		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getBlock().getChunk())) {
 			@Override
-			public boolean update(ChunkInfo chunk) {
-				return chunk.setPlaced(lookupType(typeId));
+			public UpdateResult update(ChunkInfo chunk) {
+				return chunk.getPlacedBlocks().add(lookupType(typeId)) ? UpdateResult.RelationsOnly : UpdateResult.None;
 			}
 		});
 	}
@@ -180,8 +195,8 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		
 		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getBlock().getChunk())) {
 			@Override
-			public boolean update(ChunkInfo chunk) {
-				return chunk.setBreaked(lookupType(typeId));
+			public UpdateResult update(ChunkInfo chunk) {
+				return chunk.getBreakedBlocks().add(lookupType(typeId)) ? UpdateResult.RelationsOnly : UpdateResult.None;
 			}
 		});
 	}

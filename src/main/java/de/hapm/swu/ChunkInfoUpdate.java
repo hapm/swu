@@ -3,6 +3,13 @@ package de.hapm.swu;
 public abstract class ChunkInfoUpdate {
 	private ChunkInfoId id;
 	private boolean firstLoad;
+	
+	public static enum UpdateResult {
+		SaveAll,
+		RelationsOnly, 
+		EntityOnly,
+		None
+	}
 
 	public ChunkInfoUpdate(ChunkInfoId chunkId) {
 		this.id = chunkId;
@@ -21,5 +28,5 @@ public abstract class ChunkInfoUpdate {
 		return firstLoad;
 	}
 	
-	public abstract boolean update(ChunkInfo chunk);
+	public abstract UpdateResult update(ChunkInfo chunk);
 }
