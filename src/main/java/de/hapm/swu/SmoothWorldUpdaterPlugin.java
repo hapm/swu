@@ -169,8 +169,7 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getBlock().getChunk())) {
 			@Override
 			public boolean update(ChunkInfo chunk) {
-				chunk.setPlaced(typeId);
-				return true;
+				return chunk.setPlaced(lookupType(typeId));
 			}
 		});
 	}
@@ -182,10 +181,19 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		updateTask.add(new ChunkInfoUpdate(new ChunkInfoId(args.getBlock().getChunk())) {
 			@Override
 			public boolean update(ChunkInfo chunk) {
-				chunk.setBreaked(typeId);
-				return true;
+				return chunk.setBreaked(lookupType(typeId));
 			}
 		});
+	}
+
+	private BlockTypeId lookupType(int typeId) {
+		BlockTypeId id = getDatabase().find(BlockTypeId.class, typeId);
+		if (id == null) {
+			id = new BlockTypeId(typeId);
+			getDatabase().save(id);
+		}
+		
+		return id;
 	}
 	
 	@Override

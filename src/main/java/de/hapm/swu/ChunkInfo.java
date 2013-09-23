@@ -3,6 +3,7 @@ package de.hapm.swu;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,11 +29,11 @@ public class ChunkInfo {
 	private int generatorVersion;
 	private long firstSeen;
 
-	@ManyToMany
+	@ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="chunk_info_breaked_blocks")
 	Set<BlockTypeId> breakedBlocks;
 	
-	@ManyToMany
+	@ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="chunk_info_placed_blocks")
 	Set<BlockTypeId> placedBlocks;
 	
@@ -72,12 +73,12 @@ public class ChunkInfo {
 		return world;
 	}
 	
-	public void setPlaced(int typeId) {
-		placedBlocks.add(new BlockTypeId(typeId));
+	public boolean setPlaced(BlockTypeId typeId) {
+		return placedBlocks.add(typeId);
 	}
 
-	public void setBreaked(int typeId) {
-		breakedBlocks.add(new BlockTypeId(typeId));	
+	public boolean setBreaked(BlockTypeId typeId) {
+		return breakedBlocks.add(typeId);	
 	}
 	
 	@Override
