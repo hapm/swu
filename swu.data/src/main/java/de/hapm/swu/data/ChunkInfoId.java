@@ -2,7 +2,9 @@ package de.hapm.swu.data;
 
 import java.io.Serializable;
 
+import javax.persistence.Embeddable;
 
+@Embeddable
 public class ChunkInfoId implements Serializable {
 	/**
 	 * 

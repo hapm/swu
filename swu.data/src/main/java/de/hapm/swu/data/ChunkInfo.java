@@ -4,9 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.IdClass;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -15,44 +14,34 @@ import javax.persistence.UniqueConstraint;
 
 @Entity @IdClass(ChunkInfoId.class) @UniqueConstraint(columnNames={"world","x","z"})
 public class ChunkInfo {
-	@Id 
-	@Column(name="world")
-	private String world;
-	
-	@Id
-	@Column(name="z")
-	private int z;
-
-	@Id
-	@Column(name="x")
-	private int x;
+	@EmbeddedId
+	private ChunkInfoId id;
 		
 	private int generatorVersion;
 	private long firstSeen;
 
 	@ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="chunk_info_breaked_blocks")
-	Set<BlockTypeId> breakedBlocks;
+	Set<BlockTypeInfo> breakedBlocks;
 	
 	@ManyToMany(cascade=CascadeType.ALL)
 	@JoinTable(name="chunk_info_placed_blocks")
-	Set<BlockTypeId> placedBlocks;
+	Set<BlockTypeInfo> placedBlocks;
 	
 	public static final int UNKOWN_GENERATOR_VERSION = -1;
 	
 	public ChunkInfo() {
-		this.breakedBlocks = new HashSet<BlockTypeId>();
-		this.placedBlocks = new HashSet<BlockTypeId>();
+		this.breakedBlocks = new HashSet<BlockTypeInfo>();
+		this.placedBlocks = new HashSet<BlockTypeInfo>();
 	}
 	
-	public ChunkInfo(String world, int x, int z, int generatorVersion, long firstSeen) {
-		this.breakedBlocks = new HashSet<BlockTypeId>();
-		this.placedBlocks = new HashSet<BlockTypeId>();
+	public ChunkInfo(ChunkInfoId id, int generatorVersion, long firstSeen) {
+		this.breakedBlocks = new HashSet<BlockTypeInfo>();
+		this.placedBlocks = new HashSet<BlockTypeInfo>();
 		this.generatorVersion = generatorVersion;
-		this.x = x;
-		this.z = z;
+		
+		this.id = id;
 		this.firstSeen = firstSeen;
-		this.world = world;
 	}
 	
 	public void setGeneratorVersion(int version) {
@@ -63,12 +52,16 @@ public class ChunkInfo {
 		return generatorVersion;
 	}
 	
+	public ChunkInfoId getId() {
+		return id;
+	}
+	
 	public int getX() {
-		return x;
+		return id.x;
 	}
 	
 	public int getZ() {
-		return z;
+		return id.z;
 	}
 
 	public long getFirstSeen() {
@@ -76,14 +69,14 @@ public class ChunkInfo {
 	}
 
 	public String getWorld() {
-		return world;
+		return id.world;
 	}
 	
-	public Set<BlockTypeId> getPlacedBlocks() {
+	public Set<BlockTypeInfo> getPlacedBlocks() {
 		return placedBlocks;
 	}
 	
-	public Set<BlockTypeId> getBreakedBlocks() {
+	public Set<BlockTypeInfo> getBreakedBlocks() {
 		return breakedBlocks;
 	}
 	
@@ -92,16 +85,16 @@ public class ChunkInfo {
 		if (!(obj instanceof ChunkInfo))
 			return false;
 		ChunkInfo chunkObj = (ChunkInfo)obj;
-		return chunkObj.x == x && chunkObj.z == z && chunkObj.world.equals(world);
+		return id.equals(chunkObj.id);
 	}
 	
 	@Override
 	public int hashCode() {
-		return (world + "|" + ChunkInfoId.getXZ(x, z)).hashCode();
+		return id.hashCode();
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("ChunkInfo (%s %d,%d v:%d)", world, x, z, generatorVersion);
+		return String.format("ChunkInfo (%s %d,%d v:%d)", id.world, id.x, id.z, generatorVersion);
 	}
 }

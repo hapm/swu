@@ -4,10 +4,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @Entity
-public class BlockTypeId {
+public class BlockTypeInfo {
 	@Id private int id;
 	
-	public BlockTypeId(final int id) {
+	protected BlockTypeInfo() {
+	}
+	
+	public BlockTypeInfo(final int id) {
 		this.id = id;
 	}
 	

@@ -1,15 +1,21 @@
 package de.hapm.swu;
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.PersistenceException;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.World;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,7 +26,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import de.hapm.swu.data.BlockTypeId;
+import de.hapm.swu.data.BlockTypeInfo;
 import de.hapm.swu.data.ChunkInfo;
 import de.hapm.swu.data.ChunkInfoId;
 
@@ -30,6 +36,11 @@ import de.hapm.swu.data.ChunkInfoId;
  * @author Markus Andree
  */
 public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
+	/**
+	 * A DatabaseUpdateTask can be used to schedule database updates for later asynchronous execution.
+	 * 
+	 * @author hapm
+	 */
 	private final class DatabaseUpdateTask extends BukkitRunnable {
 		private Hashtable<ChunkInfoId, ChunkInfo> chunkInfoCache;
 		private ConcurrentLinkedQueue<ChunkInfoUpdate> databaseUpdates;
@@ -91,7 +102,7 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			if (meRunning != null)
 				return;
 			
-			meRunning = runTaskTimerAsynchronously(SmoothWorldUpdaterPlugin.this, 0, 200);
+			meRunning = runTaskTimerAsynchronously(SmoothWorldUpdaterPlugin.this, 0, 2400);
 		}
 		
 		public void stop() {
@@ -122,7 +133,7 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			}
 			
 			if (info == null) {
-				info = new ChunkInfo(id.world, id.x, id.z, isNew ? getActiveVersion() : ChunkInfo.UNKOWN_GENERATOR_VERSION, Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
+				info = new ChunkInfo(id, isNew ? getActiveVersion() : ChunkInfo.UNKOWN_GENERATOR_VERSION, Calendar.getInstance(TimeZone.getTimeZone("GMT")).getTimeInMillis());
 			}
 			
 			return info;
@@ -137,11 +148,11 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		}
 
 		private ChunkInfo lookupInDatabase(ChunkInfoId key) {
-			Hashtable<String, Object> id = new Hashtable<String, Object>();
-			id.put("world", key.world);
-			id.put("x", key.x);
-			id.put("z", key.z);
-			ChunkInfo info = getDatabase().find(ChunkInfo.class, id);
+			//Hashtable<String, Object> id = new Hashtable<String, Object>();
+			//id.put("world", key.world);
+			//id.put("x", key.x);
+			//id.put("z", key.z);
+			ChunkInfo info = getDatabase().find(ChunkInfo.class, key /* id */);
 			return info;
 		}
 	}
@@ -210,10 +221,10 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		return new ChunkInfoId(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 	}
 
-	private BlockTypeId lookupType(int typeId) {
-		BlockTypeId id = getDatabase().find(BlockTypeId.class, typeId);
+	private BlockTypeInfo lookupType(int typeId) {
+		BlockTypeInfo id = getDatabase().find(BlockTypeInfo.class, typeId);
 		if (id == null) {
-			id = new BlockTypeId(typeId);
+			id = new BlockTypeInfo(typeId);
 			getDatabase().save(id);
 		}
 		
@@ -223,12 +234,53 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	@Override
 	public List<Class<?>> getDatabaseClasses() {
 		List<Class<?>> classes = super.getDatabaseClasses();
+		classes.add(ChunkInfoId.class);
 		classes.add(ChunkInfo.class);
-		classes.add(BlockTypeId.class);
+		classes.add(BlockTypeInfo.class);
 		return classes;
 	}
 
 	private int getActiveVersion() {
 		return 1;
 	}
+	
+	private void loadAllChunks(World world) {
+        final Pattern regionPattern = Pattern.compile("r\\.([0-9-]+)\\.([0-9-]+)\\.mca");
+ 
+        File worldDir = new File(Bukkit.getWorldContainer(), world.getName());
+        File regionDir = new File(worldDir, "region");
+ 
+        File[] regionFiles = regionDir.listFiles(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return regionPattern.matcher(name).matches();
+            }
+        });
+ 
+        getLogger().info("Found " + (regionFiles.length * 1024) + " chunk candidates in " + regionFiles.length + " files to check for loading ...");
+ 
+        for (File f : regionFiles) {
+            // extract coordinates from filename
+            Matcher matcher = regionPattern.matcher(f.getName());
+            if (!matcher.matches()) {
+                getLogger().warning("FilenameFilter accepted unmatched filename: " + f.getName());
+                continue;
+            }
+ 
+            int mcaX = Integer.parseInt(matcher.group(1));
+            int mcaZ = Integer.parseInt(matcher.group(2));
+ 
+            int loadedCount = 0;
+ 
+            for (int cx = 0; cx < 32; cx++) {
+                for (int cz = 0; cz < 32; cz++) {
+                    // local chunk coordinates need to be transformed into global ones
+                    boolean didLoad = world.loadChunk((mcaX << 5) + cx, (mcaZ << 5) + cz, false);
+                    if(didLoad)
+                        loadedCount++;
+                }
+            }
+ 
+            getLogger().info("Actually loaded " + loadedCount + " chunks from " + f.getName() + ".");
+        }
+    }
 }
