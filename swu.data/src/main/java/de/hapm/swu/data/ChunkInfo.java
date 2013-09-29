@@ -6,13 +6,13 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.UniqueConstraint;
 
 
-@Entity @IdClass(ChunkInfoId.class) @UniqueConstraint(columnNames={"world","x","z"})
+@Entity @UniqueConstraint(columnNames={"world","x","z"})
 public class ChunkInfo {
 	@EmbeddedId
 	private ChunkInfoId id;
@@ -21,11 +21,17 @@ public class ChunkInfo {
 	private long firstSeen;
 
 	@ManyToMany(cascade=CascadeType.ALL)
-	@JoinTable(name="chunk_info_breaked_blocks")
+	@JoinTable(name="chunk_info_breaked_blocks", joinColumns={@JoinColumn(name="chunk_info_world",referencedColumnName="world"),
+			  @JoinColumn(name="chunk_info_x",referencedColumnName="x"),
+			  @JoinColumn(name="chunk_info_z",referencedColumnName="z")})//,
+			  //inverseJoinColumns=@JoinColumn(name="id",referencedColumnName="block_type_id"))
 	Set<BlockTypeInfo> breakedBlocks;
 	
 	@ManyToMany(cascade=CascadeType.ALL)
-	@JoinTable(name="chunk_info_placed_blocks")
+	@JoinTable(name="chunk_info_placed_blocks", joinColumns={@JoinColumn(name="chunk_info_world",referencedColumnName="world"),
+		  @JoinColumn(name="chunk_info_x",referencedColumnName="x"),
+		  @JoinColumn(name="chunk_info_z",referencedColumnName="z")})//,
+		  //inverseJoinColumns=@JoinColumn(name="block_type_id",referencedColumnName="id"))
 	Set<BlockTypeInfo> placedBlocks;
 	
 	public static final int UNKOWN_GENERATOR_VERSION = -1;
@@ -39,7 +45,6 @@ public class ChunkInfo {
 		this.breakedBlocks = new HashSet<BlockTypeInfo>();
 		this.placedBlocks = new HashSet<BlockTypeInfo>();
 		this.generatorVersion = generatorVersion;
-		
 		this.id = id;
 		this.firstSeen = firstSeen;
 	}
@@ -78,19 +83,6 @@ public class ChunkInfo {
 	
 	public Set<BlockTypeInfo> getBreakedBlocks() {
 		return breakedBlocks;
-	}
-	
-	@Override
-	public boolean equals(Object obj) {
-		if (!(obj instanceof ChunkInfo))
-			return false;
-		ChunkInfo chunkObj = (ChunkInfo)obj;
-		return id.equals(chunkObj.id);
-	}
-	
-	@Override
-	public int hashCode() {
-		return id.hashCode();
 	}
 	
 	@Override
