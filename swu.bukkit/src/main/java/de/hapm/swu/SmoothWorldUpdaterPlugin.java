@@ -16,13 +16,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.map.MapRenderer;
+import org.bukkit.map.MapView;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import com.avaje.ebean.Query;
+
+import de.hapm.swu.commands.MapCommands;
 import de.hapm.swu.data.BlockTypeInfo;
 import de.hapm.swu.data.ChunkInfo;
 import de.hapm.swu.data.ChunkInfoId;
+import de.hapm.swu.map.ChunkInfoRenderer;
 
 /**
  * This little plugin tracks when chunks where generated, and with what version of 
@@ -162,15 +168,19 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	}
 
 	private DatabaseUpdateTask updateTask;
+	private ChunkInfoRenderer mapRenderer;
 	
 	@Override
 	public void onEnable() {
 		super.onEnable();
 		setupDatabase();
-		getServer().getPluginManager().registerEvents(this, this);
+		mapRenderer = new ChunkInfoRenderer(this);
+		mapRenderer.start();
 		updateTask = new DatabaseUpdateTask();
 		updateTask.setUpdateTime((int)getConfig().getLong("updatetime")*20);
 		updateTask.start();
+		getServer().getPluginManager().registerEvents(this, this);
+		getCommand("swumap").setExecutor(new MapCommands(this));
 	}
 
 	public void setupDatabase() {
@@ -186,6 +196,8 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	@Override
 	public void onDisable() {
 		super.onDisable();
+		mapRenderer.stop();
+		mapRenderer = null;
 		updateTask.stop();
 	}
 	
@@ -225,6 +237,12 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	public ChunkInfoId getIdForChunk(Chunk chunk) {
 		return new ChunkInfoId(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 	}
+	
+	public ChunkInfo[] getChunkInfosInRange(String world, int minX, int minZ, int maxX, int maxZ) {
+		Query<ChunkInfo> qry = getDatabase().find(ChunkInfo.class);
+		qry.where().between("x", minX, maxX).conjunction().between("z", minZ, maxZ).conjunction().eq("world", world);
+		return qry.findList().toArray(new ChunkInfo[0]);
+	}
 
 	private BlockTypeInfo lookupType(int typeId) {
 		BlockTypeInfo id = getDatabase().find(BlockTypeInfo.class, typeId);
@@ -247,5 +265,16 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 
 	private int getActiveVersion() {
 		return 1;
+	}
+
+	public void changeToSwuMap(MapView map) {
+		if (map.isVirtual())
+			return;
+		
+		for (MapRenderer renderer : map.getRenderers()) {
+			map.removeRenderer(renderer);
+		}
+		
+		map.addRenderer(mapRenderer);
 	}
 }

@@ -5,3 +5,10 @@ main: ${main.class}
 author: hapm
 database: true
 load: STARTUP
+commands:
+  swumap:
+    description: Changes the map currently in hand of the player to be an swu map.
+    usage: /swumap
+permissions:
+  swu.map:
+    description: Allows the user to create a swu map 
