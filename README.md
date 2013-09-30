@@ -1,0 +1,4 @@
+swu
+===
+
+SmoothWorldUpdater bukkit plugin
