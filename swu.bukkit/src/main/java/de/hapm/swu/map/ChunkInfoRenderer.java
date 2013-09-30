@@ -55,10 +55,12 @@ public class ChunkInfoRenderer extends MapRenderer {
 		if (!request.isDone())
 			return;
 
-		int currentLine = request.nextLine();
 		final byte[][] data = request.getData();
-		for (int i = 0; i < 128; i++) {
-			canvas.setPixel(i, currentLine, data[currentLine][i]);
+		for (int ii = 0; ii < 2; ii++) {
+			int currentLine = request.nextLine();
+			for (int i = 0; i < 128; i++) {
+				canvas.setPixel(i, currentLine, data[currentLine][i]);
+			}
 		}
 	}
 
