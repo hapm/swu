@@ -1,32 +1,24 @@
 package de.hapm.swu.map;
 
-import java.awt.Toolkit;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.MemoryImageSource;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.map.MapCanvas;
+import org.bukkit.map.MapCursor;
 import org.bukkit.map.MapRenderer;
 import org.bukkit.map.MapView;
+
 import de.hapm.swu.SmoothWorldUpdaterPlugin;
 
 public class ChunkInfoRenderer extends MapRenderer {
 	private ConcurrentHashMap<Short, ChunkInfoRenderingRequest> renderedRequests;
 	private ChunkInfoRenderingTask renderTask;
 	private SmoothWorldUpdaterPlugin plugin;
-	private final ColorModel colorModel;
 
 	public ChunkInfoRenderer(SmoothWorldUpdaterPlugin plugin) {
 		this.plugin = plugin;
 		this.renderedRequests = new ConcurrentHashMap<Short, ChunkInfoRenderingRequest>();
-		colorModel = new ComponentColorModel(
-				   ColorSpace.getInstance(ColorSpace.CS_GRAY), new int[] { 16 }, 
-				   false, true, Transparency.BITMASK, DataBuffer.TYPE_BYTE);
 	}
 
 	@Override
@@ -42,24 +34,38 @@ public class ChunkInfoRenderer extends MapRenderer {
 			renderTask.add(request);
 		}
 		
+		MapCursor cursor;
+		
+		final Location location = player.getLocation();
+		final int playerX = ((location.getBlockX() - view.getCenterX()) >> 3) /*+ 128*/;
+		final int playerZ = ((location.getBlockZ() - view.getCenterZ()) >> 3) /*+ 128*/;
+		if (playerX < 128 && playerX >= -128 && playerZ < 128 || playerZ >= -128) {
+			final byte direction = (byte)(((int)location.getYaw() + 360) % 360 * 16 / 360);
+			if (canvas.getCursors().size() == 0) {
+				canvas.getCursors().addCursor(playerX, playerZ, direction, MapCursor.Type.WHITE_POINTER.getValue());
+			}
+			else {
+				cursor = canvas.getCursors().getCursor(0);
+				cursor.setDirection(direction);
+				cursor.setX((byte) (playerX));
+				cursor.setY((byte) (playerZ));
+			}
+		}
+		
 		if (!request.isDone())
 			return;
 
-		if (request.getLatestImage() == null) {
-			MemoryImageSource source = new MemoryImageSource(128, 128, colorModel, request.getData(), 0, 128);
-			request.setLatestImage(Toolkit.getDefaultToolkit().createImage(source));
+		int currentLine = request.nextLine();
+		final byte[][] data = request.getData();
+		for (int i = 0; i < 128; i++) {
+			canvas.setPixel(i, currentLine, data[currentLine][i]);
 		}
-		
-		canvas.drawImage(0, 0, request.getLatestImage());
-		
-		request.setDone(false);
 	}
 
 	public void start() {
 		stop();
-		
 		renderTask = new ChunkInfoRenderingTask(plugin);
-		renderTask.runTaskTimerAsynchronously(plugin, 0, 1200);
+		renderTask.runTaskTimerAsynchronously(plugin, 0, 20);
 	}
 	
 	public void stop() {
