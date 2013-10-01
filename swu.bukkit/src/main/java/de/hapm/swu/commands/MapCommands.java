@@ -10,10 +10,22 @@ import org.bukkit.map.MapView;
 
 import de.hapm.swu.SmoothWorldUpdaterPlugin;
 
+/**
+ * Implementing all map related commands of swu.
+ * 
+ * @author Markus Andree
+ */
 public class MapCommands implements CommandExecutor {
-
+	/**
+	 * Saves the plugin, this MapCommands instance is associated to.
+	 */
 	private SmoothWorldUpdaterPlugin plugin;
 
+	/**
+	 * Initializes a new instance of the MapCommands class.
+	 * 
+	 * @param plugin The plugin instance to associate this MapCommands instance to.
+	 */
 	public MapCommands(SmoothWorldUpdaterPlugin plugin) {
 		this.plugin = plugin;
 	}

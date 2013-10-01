@@ -46,7 +46,12 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		private ConcurrentLinkedQueue<ChunkInfoUpdate> databaseUpdates;
 		private BukkitTask meRunning;
 		private int updateTime;
-
+		
+		/**
+		 * Sets the delay between each run of the DatabaseUpdateTask.
+		 * 
+		 * @param updateTime The delay in game ticks.
+		 */
 		public void setUpdateTime(int updateTime) {
 			this.updateTime = updateTime;
 			if (meRunning != null) {
@@ -55,6 +60,9 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			}
 		}
 
+		/**
+		 * Initializes a new DatabaseUpdateTask.
+		 */
 		public DatabaseUpdateTask() {
 			chunkInfoCache = new Hashtable<ChunkInfoId, ChunkInfo>();
 			databaseUpdates = new ConcurrentLinkedQueue<ChunkInfoUpdate>();
@@ -108,6 +116,11 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			}
 		}
 		
+		/**
+		 * Starts the processing of {@link ChunkInfoUpdate} instances.
+		 * 
+		 * Schedules the {@link DatabaseUpdateTask} as an async background timer task to process {@link ChunkInfoUpdate}s.
+		 */
 		public void start() {
 			if (meRunning != null)
 				return;
@@ -115,6 +128,12 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			meRunning = runTaskTimerAsynchronously(SmoothWorldUpdaterPlugin.this, 0, updateTime);
 		}
 		
+
+		/**
+		 * Stops the processing of {@link ChunkInfoUpdate} instances.
+		 * 
+		 * Removes the schedule of the {@link DatabaseUpdateTask} as an async background timer task.
+		 */
 		public void stop() {
 			if (meRunning == null)
 				return;
@@ -125,10 +144,20 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			meRunning = null;
 		}
 		
+		/**
+		 * Adds the given ChunkInfoUpdate for being processed.
+		 * 
+		 * @param update The ChunkInfoUpdate to process.
+		 */
 		public void add(ChunkInfoUpdate update) {
 			databaseUpdates.add(update);
 		}
 		
+		/**
+		 * Caches the given ChunkInfo for being saved on the next save call.
+		 * 
+		 * @param info The info to cache.
+		 */
 		private void cacheForWrite(ChunkInfo info) {
 			final ChunkInfoId key = new ChunkInfoId(info);
 			if (!chunkInfoCache.contains(key)) {
@@ -136,6 +165,17 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			}
 		}
 
+		/**
+		 * Gets the ChunkInfo with the given id.
+		 * 
+		 * This will first try to find the ChunkInfo in the cache for pending changes. Then it
+		 * will try to find it in the database.
+		 * 
+		 * @param id The id of the ChunkInfo to get.
+		 * @param isNew Indicating whether the ChunkInfo is for a Chunk, that was newly created.
+		 * 
+		 * @return The ChunkInfo for the given ChunkInfoId.
+		 */
 		private ChunkInfo getChunkInfo(ChunkInfoId id, final boolean isNew) {
 			ChunkInfo info = lookupInCache(id);
 			if (info == null) {
@@ -149,6 +189,14 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			return info;
 		}
 
+		/**
+		 * Searches the update pending cache for the given key.
+		 * 
+		 * @param key The ChunkInfoId to search for.
+		 * @return The ChunkInfo from the cache, or null if 
+		 *         there is no pending update for the ChunkInfo
+		 *         identified by the given key.
+		 */
 		private ChunkInfo lookupInCache(ChunkInfoId key) {
 			Hashtable<ChunkInfoId, ChunkInfo> chunkInfoCache = new Hashtable<ChunkInfoId, ChunkInfo>();;
 			if (chunkInfoCache.containsKey(key))
@@ -157,17 +205,29 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 			return null;
 		}
 
+		/**
+		 * Searches the database for the given key.
+		 * 
+		 * @param key The ChunkInfoId to search for.
+		 * @return The ChunkInfo from the database, or null if 
+		 *         there is ChunkInfo identified by the given key 
+		 *         in the database.
+		 */
 		private ChunkInfo lookupInDatabase(ChunkInfoId key) {
-			//Hashtable<String, Object> id = new Hashtable<String, Object>();
-			//id.put("world", key.world);
-			//id.put("x", key.x);
-			//id.put("z", key.z);
-			ChunkInfo info = getDatabase().find(ChunkInfo.class, key /* id */);
+			ChunkInfo info = getDatabase().find(ChunkInfo.class, key);
 			return info;
 		}
 	}
 
+	/**
+	 * Saves the instance of the background database update task.
+	 */
 	private DatabaseUpdateTask updateTask;
+	
+	/**
+	 * Saves the instance of the ChunkInfoRenderer used to render
+	 * ChunkInfo maps.
+	 */
 	private ChunkInfoRenderer mapRenderer;
 	
 	@Override
@@ -183,6 +243,9 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		getCommand("swumap").setExecutor(new MapCommands(this));
 	}
 
+	/**
+	 * Sets up the database when enabling the plugin the first time.
+	 */
 	public void setupDatabase() {
 		try {
 			getDatabase().find(ChunkInfo.class).findRowCount();
@@ -234,16 +297,38 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		});
 	}
 	
+	/**
+	 * Generates the ChunkInfoId for the given Chunk.
+	 * 
+	 * @param chunk The Chunk to get the id for.
+	 * @return The ChunkInfoId for the Chunk.
+	 */
 	public ChunkInfoId getIdForChunk(Chunk chunk) {
 		return new ChunkInfoId(chunk.getWorld().getName(), chunk.getX(), chunk.getZ());
 	}
 	
+	/**
+	 * Gets all ChunkInfos from the database, that are in the given range.
+	 * 
+	 * @param world The name of the world to lookup the ChunkInfos for.
+	 * @param minX The minimum x coord to get the ChunkInfo for.
+	 * @param minZ The minimum z coord to get the ChunkInfo for.
+	 * @param maxX The maximum x coord to get the ChunkInfo for.
+	 * @param maxZ The maximum z coord to get the ChunkInfo for.
+	 * @return
+	 */
 	public ChunkInfo[] getChunkInfosInRange(String world, int minX, int minZ, int maxX, int maxZ) {
 		Query<ChunkInfo> qry = getDatabase().find(ChunkInfo.class);
 		qry.where().between("x", minX, maxX).conjunction().between("z", minZ, maxZ).conjunction().eq("world", world);
 		return qry.findList().toArray(new ChunkInfo[0]);
 	}
 
+	/**
+	 * Looks up the BlockTypeInfo for a given id.
+	 * 
+	 * @param typeId The id to look for.
+	 * @return The BlockType associated to the id.
+	 */
 	private BlockTypeInfo lookupType(int typeId) {
 		BlockTypeInfo id = getDatabase().find(BlockTypeInfo.class, typeId);
 		if (id == null) {
@@ -263,10 +348,23 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 		return classes;
 	}
 
+	/**
+	 * Gets the currently active swu generator version number.
+	 * 
+	 * @return An id that identifies the current generator.
+	 */
 	private int getActiveVersion() {
 		return 1;
 	}
 
+	/**
+	 * Changes the given MapView to render a ChunkInfo map.
+	 * 
+	 * Removes any other renderer from the MapView and adds the
+	 * ChunkInfoRenderer as the only new one.
+	 * 
+	 * @param map The MapView to change.
+	 */
 	public void changeToSwuMap(MapView map) {
 		if (map.isVirtual())
 			return;

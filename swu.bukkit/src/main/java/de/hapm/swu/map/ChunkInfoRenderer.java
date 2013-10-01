@@ -11,11 +11,32 @@ import org.bukkit.map.MapView;
 
 import de.hapm.swu.SmoothWorldUpdaterPlugin;
 
+/**
+ * MapRenderer implementation to render ChunkInfos on a MapView.
+ * 
+ * @author Markus Andree
+ */
 public class ChunkInfoRenderer extends MapRenderer {
+	/**
+	 * Saves all active ChunkInfoRenderingRequests indexed by the map id using it.
+	 */
 	private ConcurrentHashMap<Short, ChunkInfoRenderingRequest> renderedRequests;
+	
+	/**
+	 * The background task used to render the maps.
+	 */
 	private ChunkInfoRenderingTask renderTask;
+	
+	/**
+	 * The plugin, this ChunkInfoRenderer ist assigned to.
+	 */
 	private SmoothWorldUpdaterPlugin plugin;
 
+	/**
+	 * Initializes a new ChunkInfoRenderer instance and associates it with the given plugin.
+	 * 
+	 * @param plugin The SmoothWorldUpdaterPlugin instance, this renderer belongs to.
+	 */
 	public ChunkInfoRenderer(SmoothWorldUpdaterPlugin plugin) {
 		this.plugin = plugin;
 		this.renderedRequests = new ConcurrentHashMap<Short, ChunkInfoRenderingRequest>();
@@ -64,12 +85,18 @@ public class ChunkInfoRenderer extends MapRenderer {
 		}
 	}
 
+	/**
+	 * Schedules the background rendering task for being executed.
+	 */
 	public void start() {
 		stop();
 		renderTask = new ChunkInfoRenderingTask(plugin);
 		renderTask.runTaskTimerAsynchronously(plugin, 0, 20);
 	}
 	
+	/**
+	 * Removes the rendering background task from the scheduled task queue.
+	 */
 	public void stop() {
 		if (renderTask == null)
 			return;

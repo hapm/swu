@@ -4,6 +4,11 @@ import java.io.Serializable;
 
 import javax.persistence.Embeddable;
 
+/**
+ * Represents a unique id for a given Chunk object.
+ * 
+ * @author Markus Andree
+ */
 @Embeddable
 public class ChunkInfoId implements Serializable {
 	/**
