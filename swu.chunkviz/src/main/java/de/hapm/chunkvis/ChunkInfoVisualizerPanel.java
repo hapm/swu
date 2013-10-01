@@ -9,34 +9,34 @@ import javax.swing.JPanel;
 import javax.swing.Timer;
 
 public class ChunkInfoVisualizerPanel extends JPanel implements ActionListener {
-	/**
+    /**
 	 * 
 	 */
-	private static final long serialVersionUID = -1135055416153286125L;
-	private ChunkInfoVisualizer visualizer;
-	private Timer repaintTimer;
+    private static final long serialVersionUID = -1135055416153286125L;
+    private ChunkInfoVisualizer visualizer;
+    private Timer repaintTimer;
 
-	public ChunkInfoVisualizerPanel() {
-		repaintTimer= new Timer(500, this);
-		repaintTimer.setInitialDelay(1000);
-	}
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		if (visualizer != null)
-			visualizer.draw((Graphics2D) g);
-	}
+    public ChunkInfoVisualizerPanel() {
+	repaintTimer = new Timer(500, this);
+	repaintTimer.setInitialDelay(1000);
+    }
 
-	public void setVisualizer(ChunkInfoVisualizer visualizer) {
-		this.visualizer = visualizer;
-	}
+    @Override
+    protected void paintComponent(Graphics g) {
+	super.paintComponent(g);
+	if (visualizer != null)
+	    visualizer.draw((Graphics2D) g);
+    }
 
-	public void actionPerformed(ActionEvent e) {
-		this.repaint();
-	}
+    public void setVisualizer(ChunkInfoVisualizer visualizer) {
+	this.visualizer = visualizer;
+    }
 
-	public void start() {
-		repaintTimer.start();
-	}
+    public void actionPerformed(ActionEvent e) {
+	this.repaint();
+    }
+
+    public void start() {
+	repaintTimer.start();
+    }
 }
