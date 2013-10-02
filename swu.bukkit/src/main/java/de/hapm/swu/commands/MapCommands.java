@@ -49,7 +49,7 @@ public class MapCommands implements CommandExecutor {
 
 	    MapView map = plugin.getServer().getMap(item.getDurability());
 	    if (map == null) {
-		p.sendMessage("The map you're using couldn't be find by the server.");
+		p.sendMessage("The map you're using couldn't be found by the server.");
 		return true;
 	    }
 
