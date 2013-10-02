@@ -170,7 +170,7 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	 *            The info to cache.
 	 */
 	private void cacheForWrite(ChunkInfo info) {
-	    final ChunkInfoId key = new ChunkInfoId(info);
+	    final ChunkInfoId key = info.getId();
 	    if (!chunkInfoCache.contains(key)) {
 		chunkInfoCache.put(key, info);
 	    }
