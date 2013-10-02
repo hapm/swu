@@ -12,24 +12,37 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class ChunkInfoId implements Serializable {
     /**
-	 * 
-	 */
+     * The serialization id of the class.
+     */
     private static final long serialVersionUID = -3487813011891898938L;
 
+    /**
+     * Saves the name of the world, the identified Chunk is in.
+     */
     public String world;
+
+    /**
+     * Saves the x chunk coordinate of the identified Chunk.
+     */
     public int x;
+    /**
+     * Saves the y chunk coordinate of the identified Chunk.
+     */
     public int z;
 
+    /**
+     * Initializes a new ChunkInfoId.
+     */
     public ChunkInfoId() {
 
     }
 
-    public ChunkInfoId(ChunkInfo info) {
-	this.world = info.getWorld();
-	this.x = info.getX();
-	this.z = info.getZ();
-    }
-
+    /**
+     * Initializes a new ChunkInfoId identifying the given Chunk.
+     * @param world The name of the world, the chunk is in.
+     * @param x The x chunk coordinate of the identified Chunk.
+     * @param z The z chunk coordinate of the identified Chunk.
+     */
     public ChunkInfoId(final String world, final int x, final int z) {
 	this.world = world;
 	this.x = x;
