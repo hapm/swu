@@ -34,6 +34,11 @@ public class ChunkInfo {
      * The time in ms, when this chunk was seen the first time.
      */
     private long firstSeen;
+    
+    /**
+     * Saves if this Chunk was manually fixed by the user.
+     */
+    private boolean isFixed;
 
     /**
      * Saves a list of all block types, that where already broken in the
@@ -174,6 +179,31 @@ public class ChunkInfo {
      */
     public Set<BlockTypeInfo> getBreakedBlocks() {
 	return breakedBlocks;
+    }
+    
+    /**
+     * Gets a value indicating whether the related chunk was set to be
+     * fixed manually by the user.
+     * 
+     * If this is false, the correction of the Chunk will be decided on the dynamic rules
+     * defined in the configuration of the plugin.
+     * 
+     * @return Returns true, if the user forced this Chunk to be not regenerated,
+     *         false otherwise.
+     */
+    public boolean isManuallyFixed() {
+	return isFixed;
+    }
+    
+    /**
+     * Sets a value indicating whether the related Chunk should never be corrected or not.
+     * 
+     * @param fixed If true, the Chunk will never be corrected on map updates, else the 
+     *              rules defined in the configuration will aply to check if the chunk
+     *              is correctable.
+     */
+    public void setManuallyFixed(boolean fixed) {
+	isFixed = fixed;
     }
 
     @Override
