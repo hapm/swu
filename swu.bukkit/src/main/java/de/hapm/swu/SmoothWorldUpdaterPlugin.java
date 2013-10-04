@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import javax.persistence.PersistenceException;
 
 import org.bukkit.Chunk;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -28,6 +29,7 @@ import de.hapm.swu.commands.MapCommands;
 import de.hapm.swu.data.BlockTypeInfo;
 import de.hapm.swu.data.ChunkInfo;
 import de.hapm.swu.data.ChunkInfoId;
+import de.hapm.swu.filter.TypeFilter;
 import de.hapm.swu.map.ChunkInfoRenderer;
 
 /**
@@ -248,6 +250,8 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
      */
     private ChunkInfoRenderer mapRenderer;
 
+    private TypeFilter fixedFilter;
+
     @Override
     public void onEnable() {
 	super.onEnable();
@@ -371,6 +375,13 @@ public class SmoothWorldUpdaterPlugin extends JavaPlugin implements Listener {
 	}
 
 	return id;
+    }
+    
+    public boolean isFixedByConfig(ChunkInfo chunk) {
+	if (fixedFilter.matches(chunk.getBreakedBlocks(), chunk.getPlacedBlocks()))
+	    return true;
+	
+	return false;
     }
 
     @Override
