@@ -13,7 +13,7 @@ public class ChunkCorrectionJob implements Runnable {
      * Saves a snapshot of the chunk, used for the calculations.
      */
     private ChunkSnapshot chunk;
-    
+
     /**
      * Saves the instance of the associated plugin.
      */
@@ -22,16 +22,18 @@ public class ChunkCorrectionJob implements Runnable {
     /**
      * Initializes a new instance of the ChunkCorrectionJob class.
      * 
-     * @param chunk The Chunk, that should be corrected.
-     * @param plugin The plugin to associate the new job to.
+     * @param chunk
+     *            The Chunk, that should be corrected.
+     * @param plugin
+     *            The plugin to associate the new job to.
      */
     public ChunkCorrectionJob(Chunk chunk, SmoothWorldUpdaterPlugin plugin) {
-	this.chunk = chunk.getChunkSnapshot();
-	this.plugin = plugin;
+        this.chunk = chunk.getChunkSnapshot();
+        this.plugin = plugin;
     }
 
     public void run() {
-	
+
     }
 
 }

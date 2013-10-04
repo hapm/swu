@@ -9,19 +9,21 @@ public class IncludesTypeFilter extends TypeFilter {
     private boolean breaked;
 
     public IncludesTypeFilter(BlockTypeInfo type, boolean breaked) {
-	this.type = type;
-	this.breaked = breaked;
+        this.type = type;
+        this.breaked = breaked;
     }
 
-    /* (non-Javadoc)
+    /*
+     * (non-Javadoc)
+     * 
      * @see de.hapm.swu.TypeFilter#matches(java.util.Set, java.util.Set)
      */
     public boolean matches(Set<BlockTypeInfo> breakedBlocks,
-	    Set<BlockTypeInfo> placedBlocks) {
-	if (breaked)
-	    return breakedBlocks.contains(type);
-	else 
-	    return placedBlocks.contains(type);
+            Set<BlockTypeInfo> placedBlocks) {
+        if (breaked)
+            return breakedBlocks.contains(type);
+        else
+            return placedBlocks.contains(type);
     }
 
 }

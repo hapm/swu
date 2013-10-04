@@ -10,20 +10,20 @@ public class WorldInfo {
     private boolean allChunksScanned;
 
     public WorldInfo(String name) {
-	this.name = name;
-	this.allChunksScanned = false;
+        this.name = name;
+        this.allChunksScanned = false;
     }
 
     public WorldInfo(String name, boolean allChunksScanned) {
-	this.name = name;
-	this.allChunksScanned = allChunksScanned;
+        this.name = name;
+        this.allChunksScanned = allChunksScanned;
     }
 
     public String getName() {
-	return name;
+        return name;
     }
 
     public boolean areAllChunksScanned() {
-	return allChunksScanned;
+        return allChunksScanned;
     }
 }

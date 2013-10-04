@@ -34,7 +34,7 @@ public class ChunkInfo {
      * The time in ms, when this chunk was seen the first time.
      */
     private long firstSeen;
-    
+
     /**
      * Saves if this Chunk was manually fixed by the user.
      */
@@ -46,9 +46,9 @@ public class ChunkInfo {
      */
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "chunk_info_breaked_blocks", joinColumns = {
-	    @JoinColumn(name = "chunk_info_world", referencedColumnName = "world"),
-	    @JoinColumn(name = "chunk_info_x", referencedColumnName = "x"),
-	    @JoinColumn(name = "chunk_info_z", referencedColumnName = "z") })
+            @JoinColumn(name = "chunk_info_world", referencedColumnName = "world"),
+            @JoinColumn(name = "chunk_info_x", referencedColumnName = "x"),
+            @JoinColumn(name = "chunk_info_z", referencedColumnName = "z") })
     Set<BlockTypeInfo> breakedBlocks;
 
     /**
@@ -57,9 +57,9 @@ public class ChunkInfo {
      */
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "chunk_info_placed_blocks", joinColumns = {
-	    @JoinColumn(name = "chunk_info_world", referencedColumnName = "world"),
-	    @JoinColumn(name = "chunk_info_x", referencedColumnName = "x"),
-	    @JoinColumn(name = "chunk_info_z", referencedColumnName = "z") })
+            @JoinColumn(name = "chunk_info_world", referencedColumnName = "world"),
+            @JoinColumn(name = "chunk_info_x", referencedColumnName = "x"),
+            @JoinColumn(name = "chunk_info_z", referencedColumnName = "z") })
     Set<BlockTypeInfo> placedBlocks;
 
     /**
@@ -72,8 +72,8 @@ public class ChunkInfo {
      * Initializes a new instance of the ChunkInfo class.
      */
     public ChunkInfo() {
-	this.breakedBlocks = new HashSet<BlockTypeInfo>();
-	this.placedBlocks = new HashSet<BlockTypeInfo>();
+        this.breakedBlocks = new HashSet<BlockTypeInfo>();
+        this.placedBlocks = new HashSet<BlockTypeInfo>();
     }
 
     /**
@@ -88,11 +88,11 @@ public class ChunkInfo {
      *            The time in ms, when the chunk was seen the first time.
      */
     public ChunkInfo(ChunkInfoId id, int generatorVersion, long firstSeen) {
-	this.breakedBlocks = new HashSet<BlockTypeInfo>();
-	this.placedBlocks = new HashSet<BlockTypeInfo>();
-	this.generatorVersion = generatorVersion;
-	this.id = id;
-	this.firstSeen = firstSeen;
+        this.breakedBlocks = new HashSet<BlockTypeInfo>();
+        this.placedBlocks = new HashSet<BlockTypeInfo>();
+        this.generatorVersion = generatorVersion;
+        this.id = id;
+        this.firstSeen = firstSeen;
     }
 
     /**
@@ -102,7 +102,7 @@ public class ChunkInfo {
      *            The version of the generator.
      */
     public void setGeneratorVersion(int version) {
-	generatorVersion = version;
+        generatorVersion = version;
     }
 
     /**
@@ -112,7 +112,7 @@ public class ChunkInfo {
      * @return The generator version.
      */
     public int getGeneratorVersion() {
-	return generatorVersion;
+        return generatorVersion;
     }
 
     /**
@@ -121,7 +121,7 @@ public class ChunkInfo {
      * @return The id.
      */
     public ChunkInfoId getId() {
-	return id;
+        return id;
     }
 
     /**
@@ -130,7 +130,7 @@ public class ChunkInfo {
      * @return The chunk x coordinate.
      */
     public int getX() {
-	return id.x;
+        return id.x;
     }
 
     /**
@@ -139,7 +139,7 @@ public class ChunkInfo {
      * @return The chunk y coordinate.
      */
     public int getZ() {
-	return id.z;
+        return id.z;
     }
 
     /**
@@ -149,7 +149,7 @@ public class ChunkInfo {
      * @return The time in ms.
      */
     public long getFirstSeen() {
-	return firstSeen;
+        return firstSeen;
     }
 
     /**
@@ -158,7 +158,7 @@ public class ChunkInfo {
      * @return The worlds name.
      */
     public String getWorld() {
-	return id.world;
+        return id.world;
     }
 
     /**
@@ -168,7 +168,7 @@ public class ChunkInfo {
      * @return The list of BlockTypeInfos.
      */
     public Set<BlockTypeInfo> getPlacedBlocks() {
-	return placedBlocks;
+        return placedBlocks;
     }
 
     /**
@@ -178,37 +178,39 @@ public class ChunkInfo {
      * @return The list of BlockTypeInfos.
      */
     public Set<BlockTypeInfo> getBreakedBlocks() {
-	return breakedBlocks;
+        return breakedBlocks;
     }
-    
+
     /**
-     * Gets a value indicating whether the related chunk was set to be
-     * fixed manually by the user.
+     * Gets a value indicating whether the related chunk was set to be fixed
+     * manually by the user.
      * 
-     * If this is false, the correction of the Chunk will be decided on the dynamic rules
-     * defined in the configuration of the plugin.
+     * If this is false, the correction of the Chunk will be decided on the
+     * dynamic rules defined in the configuration of the plugin.
      * 
-     * @return Returns true, if the user forced this Chunk to be not regenerated,
-     *         false otherwise.
+     * @return Returns true, if the user forced this Chunk to be not
+     *         regenerated, false otherwise.
      */
     public boolean isManuallyFixed() {
-	return isFixed;
+        return isFixed;
     }
-    
+
     /**
-     * Sets a value indicating whether the related Chunk should never be corrected or not.
+     * Sets a value indicating whether the related Chunk should never be
+     * corrected or not.
      * 
-     * @param fixed If true, the Chunk will never be corrected on map updates, else the 
-     *              rules defined in the configuration will aply to check if the chunk
-     *              is correctable.
+     * @param fixed
+     *            If true, the Chunk will never be corrected on map updates,
+     *            else the rules defined in the configuration will aply to check
+     *            if the chunk is correctable.
      */
     public void setManuallyFixed(boolean fixed) {
-	isFixed = fixed;
+        isFixed = fixed;
     }
 
     @Override
     public String toString() {
-	return String.format("ChunkInfo (%s %d,%d v:%d)", id.world, id.x, id.z,
-		generatorVersion);
+        return String.format("ChunkInfo (%s %d,%d v:%d)", id.world, id.x, id.z,
+                generatorVersion);
     }
 }

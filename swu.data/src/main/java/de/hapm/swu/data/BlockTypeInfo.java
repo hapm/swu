@@ -26,7 +26,7 @@ public class BlockTypeInfo {
      *            The internal id to use for the type.
      */
     public BlockTypeInfo(final int id) {
-	this.id = id;
+        this.id = id;
     }
 
     /**
@@ -35,6 +35,6 @@ public class BlockTypeInfo {
      * @return The internal id.
      */
     public int getId() {
-	return id;
+        return id;
     }
 }

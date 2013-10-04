@@ -9,12 +9,12 @@ public class NotTypeFilter extends TypeFilter {
     private TypeFilter filter;
 
     public NotTypeFilter(TypeFilter filter) {
-	this.filter = filter;
+        this.filter = filter;
     }
 
     public boolean matches(Set<BlockTypeInfo> breakedBlocks,
-	    Set<BlockTypeInfo> placedBlocks) {
-	return !filter.matches(breakedBlocks, placedBlocks);
+            Set<BlockTypeInfo> placedBlocks) {
+        return !filter.matches(breakedBlocks, placedBlocks);
     }
 
 }

@@ -56,12 +56,12 @@ public class ChunkInfoRenderingRequest {
      *            The name of the world, to render the map for.
      */
     public ChunkInfoRenderingRequest(short id, int centerX, int centerZ,
-	    String world) {
-	this.mapId = id;
-	this.centerX = centerX;
-	this.centerZ = centerZ;
-	this.worldName = world;
-	data = new byte[128][128];
+            String world) {
+        this.mapId = id;
+        this.centerX = centerX;
+        this.centerZ = centerZ;
+        this.worldName = world;
+        data = new byte[128][128];
     }
 
     /**
@@ -71,7 +71,7 @@ public class ChunkInfoRenderingRequest {
      * @return The x world coordinate.
      */
     public int getCenterX() {
-	return centerX;
+        return centerX;
     }
 
     /**
@@ -81,7 +81,7 @@ public class ChunkInfoRenderingRequest {
      * @return The z world coordinate.
      */
     public int getCenterZ() {
-	return centerZ;
+        return centerZ;
     }
 
     /**
@@ -90,7 +90,7 @@ public class ChunkInfoRenderingRequest {
      * @return The world name.
      */
     public String getWorldName() {
-	return worldName;
+        return worldName;
     }
 
     /**
@@ -99,7 +99,7 @@ public class ChunkInfoRenderingRequest {
      * @return
      */
     public short getMapId() {
-	return mapId;
+        return mapId;
     }
 
     /**
@@ -109,12 +109,12 @@ public class ChunkInfoRenderingRequest {
      *         rendered fo rthe longest time.
      */
     public int nextLine() {
-	lastLine += 4;
-	if (lastLine > 127) {
-	    lastLine = lastLine % 4 + 1;
-	}
+        lastLine += 4;
+        if (lastLine > 127) {
+            lastLine = lastLine % 4 + 1;
+        }
 
-	return lastLine;
+        return lastLine;
     }
 
     /**
@@ -126,7 +126,7 @@ public class ChunkInfoRenderingRequest {
      * @return The reference to the internal image data buffer.
      */
     public byte[][] getData() {
-	return data;
+        return data;
     }
 
     /**
@@ -137,7 +137,7 @@ public class ChunkInfoRenderingRequest {
      *         for this request, false otherwise.
      */
     public boolean isDone() {
-	return done;
+        return done;
     }
 
     /**
@@ -147,6 +147,6 @@ public class ChunkInfoRenderingRequest {
      *            to true to mark this request as done, to false otherwise.
      */
     public void setDone(boolean done) {
-	this.done = done;
+        this.done = done;
     }
 }

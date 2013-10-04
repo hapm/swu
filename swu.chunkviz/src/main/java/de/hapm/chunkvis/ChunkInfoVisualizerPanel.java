@@ -17,26 +17,26 @@ public class ChunkInfoVisualizerPanel extends JPanel implements ActionListener {
     private Timer repaintTimer;
 
     public ChunkInfoVisualizerPanel() {
-	repaintTimer = new Timer(500, this);
-	repaintTimer.setInitialDelay(1000);
+        repaintTimer = new Timer(500, this);
+        repaintTimer.setInitialDelay(1000);
     }
 
     @Override
     protected void paintComponent(Graphics g) {
-	super.paintComponent(g);
-	if (visualizer != null)
-	    visualizer.draw((Graphics2D) g);
+        super.paintComponent(g);
+        if (visualizer != null)
+            visualizer.draw((Graphics2D) g);
     }
 
     public void setVisualizer(ChunkInfoVisualizer visualizer) {
-	this.visualizer = visualizer;
+        this.visualizer = visualizer;
     }
 
     public void actionPerformed(ActionEvent e) {
-	this.repaint();
+        this.repaint();
     }
 
     public void start() {
-	repaintTimer.start();
+        repaintTimer.start();
     }
 }

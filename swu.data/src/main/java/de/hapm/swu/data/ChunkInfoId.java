@@ -39,40 +39,44 @@ public class ChunkInfoId implements Serializable {
 
     /**
      * Initializes a new ChunkInfoId identifying the given Chunk.
-     * @param world The name of the world, the chunk is in.
-     * @param x The x chunk coordinate of the identified Chunk.
-     * @param z The z chunk coordinate of the identified Chunk.
+     * 
+     * @param world
+     *            The name of the world, the chunk is in.
+     * @param x
+     *            The x chunk coordinate of the identified Chunk.
+     * @param z
+     *            The z chunk coordinate of the identified Chunk.
      */
     public ChunkInfoId(final String world, final int x, final int z) {
-	this.world = world;
-	this.x = x;
-	this.z = z;
+        this.world = world;
+        this.x = x;
+        this.z = z;
     }
 
     @Override
     public boolean equals(Object obj) {
-	if (obj == null || !(obj instanceof ChunkInfoId))
-	    return false;
+        if (obj == null || !(obj instanceof ChunkInfoId))
+            return false;
 
-	ChunkInfoId id = (ChunkInfoId) obj;
+        ChunkInfoId id = (ChunkInfoId) obj;
 
-	return ((id.world == null && world == null) || id.world.equals(world))
-		&& id.x == x && id.z == z;
+        return ((id.world == null && world == null) || id.world.equals(world))
+                && id.x == x && id.z == z;
     }
 
     @Override
     public int hashCode() {
-	return ((world == null ? "" : world) + "|" + getXZ()).hashCode();
+        return ((world == null ? "" : world) + "|" + getXZ()).hashCode();
     }
 
     private long getXZ() {
-	return getXZ(x, z);
+        return getXZ(x, z);
     }
 
     public static long getXZ(int x, int z) {
-	long key = x;
-	key = key << 32;
-	key = key | (long) z;
-	return key;
+        long key = x;
+        key = key << 32;
+        key = key | (long) z;
+        return key;
     }
 }

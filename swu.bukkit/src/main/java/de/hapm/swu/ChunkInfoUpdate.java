@@ -30,25 +30,25 @@ public abstract class ChunkInfoUpdate {
      * @author Markus Andree
      */
     public static enum UpdateResult {
-	/**
-	 * Will save the ChunkInfo and all its relations.
-	 */
-	SaveAll,
+        /**
+         * Will save the ChunkInfo and all its relations.
+         */
+        SaveAll,
 
-	/**
-	 * Will only save the relations.
-	 */
-	RelationsOnly,
+        /**
+         * Will only save the relations.
+         */
+        RelationsOnly,
 
-	/**
-	 * Will only save the ChunkInfo itself.
-	 */
-	EntityOnly,
+        /**
+         * Will only save the ChunkInfo itself.
+         */
+        EntityOnly,
 
-	/**
-	 * Will save nothing automatically.
-	 */
-	None
+        /**
+         * Will save nothing automatically.
+         */
+        None
     }
 
     /**
@@ -59,7 +59,7 @@ public abstract class ChunkInfoUpdate {
      *            The id to create the ChunkInfoupdate for.
      */
     public ChunkInfoUpdate(ChunkInfoId chunkId) {
-	this.id = chunkId;
+        this.id = chunkId;
     }
 
     /**
@@ -73,8 +73,8 @@ public abstract class ChunkInfoUpdate {
      *            id was loaded the first time.
      */
     public ChunkInfoUpdate(ChunkInfoId chunkId, boolean firstLoad) {
-	this.id = chunkId;
-	this.firstLoad = firstLoad;
+        this.id = chunkId;
+        this.firstLoad = firstLoad;
     }
 
     /**
@@ -83,7 +83,7 @@ public abstract class ChunkInfoUpdate {
      * @return The id to be updated.
      */
     public ChunkInfoId getId() {
-	return id;
+        return id;
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class ChunkInfoUpdate {
      * @return Returns true if the Chunk is new, false otherwise.
      */
     public boolean isFirstLoad() {
-	return firstLoad;
+        return firstLoad;
     }
 
     /**
