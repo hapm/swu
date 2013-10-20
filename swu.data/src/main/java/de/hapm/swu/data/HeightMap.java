@@ -51,7 +51,7 @@ public class HeightMap {
      * @return The height map as an array, or null if the height map isn't serialized yet.
      */
     public byte[] getData() {
-        if (data == null)
+        if (!isInitialized())
             return null;
         
         return Arrays.copyOf(data, SIZE);
@@ -68,7 +68,7 @@ public class HeightMap {
         if (x > 15 || z > 15 || x < 0 || z < 0)
             throw new IllegalArgumentException("local x and y coordinates need to be between 0 and 15");
         
-        if (data == null)
+        if (!isInitialized())
             return Integer.MIN_VALUE;
         
         x <<= 4;
@@ -87,7 +87,7 @@ public class HeightMap {
         if (x > 15 || z > 15 || x < 0 || z < 0)
             throw new IllegalArgumentException("local x and y coordinates need to be between 0 and 15");
 
-        if (data == null)
+        if (!isInitialized())
            data = new byte[SIZE];
         
         x <<= 4;
@@ -101,7 +101,7 @@ public class HeightMap {
      * @return Returns true if the map is initialized, false otherwise.
      */
     public boolean isInitialized() {
-        return data == null;
+        return data != null && data.length == SIZE;
     }
 
     /**
