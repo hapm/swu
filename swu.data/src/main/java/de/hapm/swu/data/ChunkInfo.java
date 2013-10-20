@@ -11,6 +11,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.UniqueConstraint;
 
+import com.avaje.ebean.annotation.EmbeddedColumns;
+
 /**
  * Represents all information saved for a given Chunk.
  * 
@@ -34,6 +36,12 @@ public class ChunkInfo {
      * The time in ms, when this chunk was seen the first time.
      */
     private long firstSeen;
+    
+    /**
+     * Saves the height map of the chunk as seen the first time.
+     */
+    @EmbeddedColumns(columns="data=height_map")
+    private HeightMap heightMap;
 
     /**
      * Saves if this Chunk was manually fixed by the user.
@@ -179,6 +187,18 @@ public class ChunkInfo {
      */
     public Set<BlockTypeInfo> getBreakedBlocks() {
         return breakedBlocks;
+    }
+    
+    /**
+     * Gets the earliest known height map for the chunk.
+     * 
+     * @return The height map.
+     */
+    public HeightMap getHeightMap() {
+        if (heightMap == null)
+            heightMap = new HeightMap();
+        
+        return heightMap;
     }
 
     /**

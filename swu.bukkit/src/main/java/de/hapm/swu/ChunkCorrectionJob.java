@@ -3,6 +3,11 @@ package de.hapm.swu;
 import org.bukkit.Chunk;
 import org.bukkit.ChunkSnapshot;
 
+import com.avaje.ebean.EbeanServer;
+
+import de.hapm.swu.data.ChunkInfo;
+import de.hapm.swu.data.ChunkInfoId;
+
 /**
  * Used to calculate all needed changes for a chunk to be fixed.
  * 
@@ -33,7 +38,10 @@ public class ChunkCorrectionJob implements Runnable {
     }
 
     public void run() {
-
+        EbeanServer server = plugin.getDatabase();
+        ChunkInfoId id = new ChunkInfoId(chunk.getWorldName(), chunk.getX(), chunk.getZ());
+        ChunkInfo info = server.find(ChunkInfo.class, id);
+        
     }
 
 }

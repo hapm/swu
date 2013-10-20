@@ -70,7 +70,10 @@ public class ChunkVisualizerMainForm {
                         .getLevel("READ_UNCOMMITTED"));
                 config.setName("default");
                 config.setDataSourceConfig(dataSourceConfig);
-                config.addPackage("de.hapm.swu.data");
+                config.addClass(de.hapm.swu.data.ChunkInfo.class);
+                config.addClass(de.hapm.swu.data.ChunkInfoId.class);
+                config.addClass(de.hapm.swu.data.BlockTypeInfo.class);
+                config.addClass(de.hapm.swu.data.WorldInfo.class);
                 server = EbeanServerFactory.create(config);
                 visualizer = new ChunkInfoVisualizer();
                 visualizer.setProvider(new EbeanChunkInfoProvider(server));
